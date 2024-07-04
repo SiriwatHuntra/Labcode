@@ -92,29 +92,31 @@ def run_test_Lab3(df, seed, HoldoutSplit, Number_Kfold):
 
 def run_test_Lab1(df, HoldoutSplit, seed):
     Y = "Weight"
+    holdOut_log_main = []
+    for i in HoldoutSplit:
+        #average of holdout
+        holdOut_log = []
+        for j in range(seed):
+            df = Rand_DF(df, j)
+            holdOut_log.append(HoldOut(df, Y, i))
+        holdOut_log_main.append(np.mean(holdOut_log))
+    avr_of_holdout = np.mean(holdOut_log_main)
+    sd = np.std(holdOut_log_main)
+    return holdOut_log_main,avr_of_holdout, sd
 
-    #average of holdout
-    holdOut_log = []
-    for i in range(seed):
-        df = Rand_DF(df, i)
-        holdOut_log.append(HoldOut(df, Y, HoldoutSplit))
-    avr_holdOut = np.mean(holdOut_log)
-    sd = np.std(holdOut_log)
-    
-    return avr_holdOut, sd
-
-def run_test_Lab2(df, Number_Kfold, seed):
+def run_test_Lab2(df, cross_kfold, seed):
     Y = "Weight"
-
-    #average of holdout
-    cross_log = []
-    for i in range(seed):
-        df = Rand_DF(df, i)
-        cross_log.append(cross_val(df, Y, Number_Kfold))
-    avr_cross = np.mean(cross_log)
-    sd = np.std(cross_log)
-    
-    return avr_cross, sd
+    cross_log_main = []
+    for i in cross_kfold:
+        #average of holdout
+        cross_log = []
+        for j in range(seed):
+            df = Rand_DF(df, j)
+            cross_log.append(cross_val(df, Y, i))
+        cross_log_main.append(np.mean(cross_log))
+    avr_of_cross = np.mean(cross_log_main)
+    sd = np.std(cross_log_main)
+    return cross_log_main, avr_of_cross, sd
 
 
 if __name__ == "__main__":
@@ -133,7 +135,8 @@ if __name__ == "__main__":
     ##____Warning____##
     ###################
     ## if seed round > 1000 craeful for lack
-    print(run_test_Lab3(df, 100, 0.5, 10))
-    print(run_test_Lab1(df, 0.5, 1000))
+    #print(run_test_Lab3(df, 100, 0.5, 10))
+    #print(run_test_Lab1(df, holdout_arr, 1000))
+    print(run_test_Lab2(df, crossval_arr, 100))
          
     
