@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
-from statistics import mean 
+import numpy as np
 
 #Data sampling
 def Rand_DF(df ,rng_seed):
@@ -66,10 +66,10 @@ def cross_val(df, Y_col, fold):
         # Calculate RMSE for this fold
         rmse_fold = mean_squared_error(y_test, y_pred, squared=False)
         rmse_values.append(rmse_fold)
-    RMSE = mean(rmse_values)
+    RMSE = np.mean(rmse_values)
     return RMSE
 
-def run_test3(df, seed, HoldoutSplit, Number_Kfold):
+def run_test_Lab3(df, seed, HoldoutSplit, Number_Kfold):
     Y = "Weight"
 
     #average of holdout
@@ -77,17 +77,45 @@ def run_test3(df, seed, HoldoutSplit, Number_Kfold):
     for i in range(seed):
         df = Rand_DF(df, i)
         holdOut_log.append(HoldOut(df, Y, HoldoutSplit))
-    avr_holdOut = mean(holdOut_log)
+    avr_holdOut = np.mean(holdOut_log)
+    sd_holdOut = np.std(holdOut_log)
     
     #average of holdout
     cross_log = []
     for i in range(seed):
         df = Rand_DF(df, i)
         cross_log.append(cross_val(df, Y, Number_Kfold))
-    avr_cross = mean(cross_log)
-    
+    avr_cross = np.mean(cross_log)
+    sd_cross = np.std(cross_log)
 
-    return holdOut_log, cross_log, avr_holdOut, avr_cross
+    return avr_holdOut, avr_cross, sd_holdOut, sd_cross
+
+def run_test_Lab1(df, HoldoutSplit, seed):
+    Y = "Weight"
+
+    #average of holdout
+    holdOut_log = []
+    for i in range(seed):
+        df = Rand_DF(df, i)
+        holdOut_log.append(HoldOut(df, Y, HoldoutSplit))
+    avr_holdOut = np.mean(holdOut_log)
+    sd = np.std(holdOut_log)
+    
+    return avr_holdOut, sd
+
+def run_test_Lab2(df, Number_Kfold, seed):
+    Y = "Weight"
+
+    #average of holdout
+    cross_log = []
+    for i in range(seed):
+        df = Rand_DF(df, i)
+        cross_log.append(cross_val(df, Y, Number_Kfold))
+    avr_cross = np.mean(cross_log)
+    sd = np.std(cross_log)
+    
+    return avr_cross, sd
+
 
 if __name__ == "__main__":
     #Prepare data set
@@ -96,11 +124,16 @@ if __name__ == "__main__":
     AllData_RMSE = LinRe_AllData(df, "Weight")
     print(AllData_RMSE)
 
+    crossval_arr = [5, 10, 20]
+    holdout_arr = [0.3, 0.5, 0.8]
+
+    #runn_test_Lab1/2(dataframe, holdout ratio/cross folds array, seed_round)
     #runn_test3(dataframe, seed_round, holdout ratio, cross folds)
     ###################
     ##____Warning____##
     ###################
     ## if seed round > 1000 craeful for lack
-    print(run_test3(df, 1000, 0.5, 10))
+    print(run_test_Lab3(df, 100, 0.5, 10))
+    print(run_test_Lab1(df, 0.5, 1000))
          
     
